@@ -19,17 +19,12 @@ pub enum CommandType {
 }
 
 impl Parser {
-
-    pub fn new(&mut self){
-        
+    pub fn new(&mut self) {
         self.lines = vec!["push lcoal 2".to_string()];
         self.i = 0;
         self.current_cmd = self.lines[self.i].clone();
         // self.split_current_cmd = self.lines[self.i].split(" ").collect();
-
-
     }
-
 
     pub fn hasMoreLines(&self) -> bool {
         if self.i < self.lines.len() {
@@ -74,9 +69,22 @@ impl Parser {
 
         if self.command_type() != CommandType::RETURN {
             split_command[0]
-        }else{
+        } else {
             "You cannot call arg1 on a RETURN type"
         }
+    }
 
+    pub fn arg2(&mut self) -> &str {
+        let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
+
+        if self.command_type() == CommandType::PUSH
+            || self.command_type() == CommandType::POP
+            || self.command_type() == CommandType::FUNCTION
+            || self.command_type() == CommandType::CALL
+        {
+            split_command[0]
+        } else {
+            "Arg2 needs to be called on a push, pop, function, or call"
+        }
     }
 }
