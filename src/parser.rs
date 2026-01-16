@@ -2,8 +2,9 @@ pub struct Parser {
     lines: Vec<String>,
     i: usize,
     current_cmd: String,
+    // split_current_cmd: Vec<&str>
 }
-
+#[derive(PartialEq)]
 pub enum CommandType {
     ARITHMETIC,
     PUSH,
@@ -18,6 +19,18 @@ pub enum CommandType {
 }
 
 impl Parser {
+
+    pub fn new(&mut self){
+        
+        self.lines = vec!["push lcoal 2".to_string()];
+        self.i = 0;
+        self.current_cmd = self.lines[self.i].clone();
+        // self.split_current_cmd = self.lines[self.i].split(" ").collect();
+
+
+    }
+
+
     pub fn hasMoreLines(&self) -> bool {
         if self.i < self.lines.len() {
             true
@@ -31,7 +44,7 @@ impl Parser {
         self.i += 1;
     }
 
-    pub fn command_type(&self) {
+    pub fn command_type(&self) -> CommandType {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
 
         match split_command[0] {
@@ -53,6 +66,17 @@ impl Parser {
             "return" => CommandType::RETURN,
             "call" => CommandType::CALL,
             _ => CommandType::NONE,
-        };
+        }
+    }
+
+    pub fn arg1(&mut self) -> &str {
+        let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
+
+        if self.command_type() != CommandType::RETURN {
+            split_command[0]
+        }else{
+            "You cannot call arg1 on a RETURN type"
+        }
+
     }
 }
