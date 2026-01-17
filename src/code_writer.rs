@@ -16,6 +16,23 @@ pub fn write_push_pop(command: CommandType, segment: &str, index: usize) {
     }
 }
 
+pub fn write_arithmetic(command: &str) {
+    let mut instructions: Vec<String> = vec![];
+    match command {
+        "add" => {
+            instructions.push("@SP".to_string());
+            instructions.push("A=M-1".to_string());
+            instructions.push("D=M".to_string());
+            instructions.push("A=A-1".to_string());
+            instructions.push("D=D+M".to_string());
+            instructions.push("M=D".to_string());
+            instructions.push("@SP".to_string());
+            instructions.push("M=M-1".to_string());
+        }
+        _ => println!("invalid command. No match in write arithmetic"),
+    }
+}
+
 pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<String> {
     // segment
     // index
