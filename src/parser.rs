@@ -35,8 +35,9 @@ impl Parser {
         }
     }
 
-    pub fn hasMoreLines(&self) -> bool {
+    pub fn hasMoreLines(&mut self) -> bool {
         if self.i < self.lines.len() {
+            self.current_cmd = self.lines[self.i].clone();
             true
         } else {
             false
@@ -45,7 +46,6 @@ impl Parser {
 
     pub fn advance(&mut self) {
         self.i += 1;
-        self.current_cmd = self.lines[self.i].clone();
     }
 
     pub fn command_type(&self) -> CommandType {
