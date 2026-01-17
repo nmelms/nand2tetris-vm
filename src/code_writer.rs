@@ -2,17 +2,17 @@ use std::fmt::format;
 
 use crate::parser::CommandType;
 
-pub fn write_push_pop(command: CommandType, segment: &str, index: usize) {
+pub fn write_push_pop(command: CommandType, segment: &str, index: usize) -> Vec<String> {
     match command {
         CommandType::PUSH => {
             println!("pushing");
-            write_push(command, segment, index);
+            write_push(command, segment, index)
         }
         CommandType::POP => {
             println!("popping");
-            write_pop(command, segment, index);
+            write_pop(command, segment, index)
         }
-        _ => println!("invalid command"),
+        _ => vec!["nothing".to_string()],
     }
 }
 
@@ -80,7 +80,7 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
             instructions.push("D=M".to_string());
             instructions.push("A=M".to_string());
         }
-        _ => println!("Invalid Segment. Segment did not match"),
+        _ => println!("Invalid Segment: {} Segment did not match", segment),
     };
 
     // push index

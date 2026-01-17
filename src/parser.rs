@@ -1,3 +1,5 @@
+use std::fs;
+
 pub struct Parser {
     lines: Vec<String>,
     i: usize,
@@ -19,11 +21,18 @@ pub enum CommandType {
 }
 
 impl Parser {
-    pub fn new(&mut self) {
-        self.lines = vec!["push lcoal 2".to_string()];
-        self.i = 0;
-        self.current_cmd = self.lines[self.i].clone();
+    pub fn new() -> Self {
+        let file_contents = fs::read_to_string("Prog.vm").expect("failed to read VM file");
+        let lines: Vec<String> = file_contents.lines().map(String::from).collect();
+        let i = 0;
+        let current_cmd = lines[i].clone();
         // self.split_current_cmd = self.lines[self.i].split(" ").collect();
+
+        Self {
+            lines,
+            i,
+            current_cmd,
+        }
     }
 
     pub fn hasMoreLines(&self) -> bool {
@@ -35,8 +44,8 @@ impl Parser {
     }
 
     pub fn advance(&mut self) {
-        self.current_cmd = self.lines[self.i].clone();
         self.i += 1;
+        self.current_cmd = self.lines[self.i].clone();
     }
 
     pub fn command_type(&self) -> CommandType {
@@ -64,17 +73,18 @@ impl Parser {
         }
     }
 
-    pub fn arg1(&mut self) -> &str {
+    pub fn arg1(&self) -> &str {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
 
         if self.command_type() != CommandType::RETURN {
-            split_command[0]
+            // should probably refactor this to get
+            split_command[1]
         } else {
             "You cannot call arg1 on a RETURN type"
         }
     }
 
-    pub fn arg2(&mut self) -> &str {
+    pub fn arg2(&self) -> Option<usize> {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
 
         if self.command_type() == CommandType::PUSH
@@ -82,9 +92,9 @@ impl Parser {
             || self.command_type() == CommandType::FUNCTION
             || self.command_type() == CommandType::CALL
         {
-            split_command[0]
+            split_command.get(2)?.parse::<usize>().ok()
         } else {
-            "Arg2 needs to be called on a push, pop, function, or call"
+            None
         }
     }
 }
