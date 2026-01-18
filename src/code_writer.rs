@@ -30,6 +30,16 @@ pub fn write_arithmetic(command: &str) -> Vec<String> {
             instructions.push("@SP".to_string());
             instructions.push("M=M-1".to_string());
         }
+        "sub" => {
+            instructions.push("@SP".to_string());
+            instructions.push("A=M-1".to_string()); 
+            instructions.push("D=M".to_string());   
+            instructions.push("A=A-1".to_string()); 
+            instructions.push("M=M-D".to_string()); 
+            instructions.push("@SP".to_string());
+            instructions.push("M=M-1".to_string()); 
+        }
+
         _ => println!("invalid command. No match in write arithmetic"),
     }
 
@@ -60,7 +70,6 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
             instructions.push("D=M".to_string());
         }
         "temp" => {
-            // push temp i  =>  D = i
             let mut temp_idx: usize = 5;
             temp_idx += index;
             instructions.push(format!("@{}", temp_idx));
@@ -74,23 +83,7 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
             instructions.push("M=M+1".to_string());
             return instructions;
         }
-        "R13" => {
-            instructions.push("@R13".to_string());
-            instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
-        }
-        "R14" => {
-            instructions.push("@R14".to_string());
-            instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
-        }
-        "R15" => {
-            instructions.push("@R15".to_string());
-            instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
-        }
         "constant" => {
-            // push constant i  =>  D = i
             instructions.push(format!("@{}", index));
             instructions.push("D=A".to_string());
 
@@ -103,7 +96,7 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
             return instructions;
         }
 
-        _ => println!("Invalid Segment: {} Segment did not match", segment),
+        _ => panic!("Invalid Segment: {} Segment did not match", segment),
     };
 
     // push index
@@ -144,27 +137,25 @@ pub fn write_pop(command: CommandType, segment: &str, index: usize) -> Vec<Strin
             instructions.push("D=M".to_string());
         }
         "temp" => {
-            let mut temp_idx:usize = 5;
-            temp_idx += index;
-            instructions.push(format!("@{}", temp_idx ));
+            let temp_idx = 5 + index;
+            instructions.push(format!("@{}", temp_idx));
             instructions.push("D=A".to_string());
 
             // Save address in R13
             instructions.push("@R13".to_string());
             instructions.push("M=D".to_string());
 
-                // pop stack
+            // pop stack
             instructions.push("@SP".to_string());
-            instructions.push("A=M-1".to_string());
+            instructions.push("AM=M-1".to_string());
             instructions.push("D=M".to_string());
             instructions.push("@R13".to_string());
             instructions.push("A=M".to_string());
             instructions.push("M=D".to_string());
-            instructions.push("@SP".to_string());
-            instructions.push("M=M-1".to_string());
 
             return instructions;
         }
+
         "R13" => {
             instructions.push("@R13".to_string());
             instructions.push("D=M".to_string());
@@ -186,15 +177,12 @@ pub fn write_pop(command: CommandType, segment: &str, index: usize) -> Vec<Strin
     instructions.push("@R13".to_string());
     instructions.push("M=D".to_string());
 
-    // pop stack
     instructions.push("@SP".to_string());
-    instructions.push("A=M-1".to_string());
-    instructions.push("D=M".to_string());
+    instructions.push("AM=M-1".to_string()); 
+    instructions.push("D=M".to_string()); 
     instructions.push("@R13".to_string());
     instructions.push("A=M".to_string());
     instructions.push("M=D".to_string());
-    instructions.push("@SP".to_string());
-    instructions.push("M=M-1".to_string());
 
     instructions
 }

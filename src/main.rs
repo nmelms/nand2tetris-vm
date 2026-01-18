@@ -18,9 +18,10 @@ fn main() {
     // call fucntions with comamnds
     // read from file
     let mut parser = Parser::new();
-    let mut file = File::create("output.txt").expect("Failed to create file");
+    let mut file = File::create("output.asm").expect("Failed to create file");
 
     while parser.hasMoreLines() {
+        parser.advance();
         let mut instruction: Vec<String> = vec![];
 
         match parser.command_type() {
@@ -40,7 +41,5 @@ fn main() {
         for line in instruction {
             writeln!(file, "{}", line).unwrap();
         }
-
-        parser.advance();
     }
 }
