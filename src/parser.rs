@@ -6,7 +6,7 @@ pub struct Parser {
     current_cmd: String,
     // split_current_cmd: Vec<&str>
 }
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum CommandType {
     ARITHMETIC,
     PUSH,
@@ -76,7 +76,9 @@ impl Parser {
     pub fn arg1(&self) -> &str {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
 
-        if self.command_type() != CommandType::RETURN {
+        if self.command_type() == CommandType::ARITHMETIC {
+            split_command[0]
+        } else if self.command_type() != CommandType::RETURN {
             // should probably refactor this to get
             split_command[1]
         } else {

@@ -16,7 +16,8 @@ pub fn write_push_pop(command: CommandType, segment: &str, index: usize) -> Vec<
     }
 }
 
-pub fn write_arithmetic(command: &str) {
+pub fn write_arithmetic(command: &str) -> Vec<String> {
+    println!("write arth: {}", command);
     let mut instructions: Vec<String> = vec![];
     match command {
         "add" => {
@@ -31,6 +32,8 @@ pub fn write_arithmetic(command: &str) {
         }
         _ => println!("invalid command. No match in write arithmetic"),
     }
+
+    instructions
 }
 
 pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<String> {
@@ -43,27 +46,33 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
         "local" => {
             instructions.push("@LCL".to_string());
             instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
         }
         "argument" => {
             instructions.push("@ARG".to_string());
             instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
         }
         "this" => {
             instructions.push("@THIS".to_string());
             instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
         }
         "that" => {
             instructions.push("@THAT".to_string());
             instructions.push("D=M".to_string());
-            instructions.push("A=M".to_string());
         }
         "temp" => {
-            instructions.push("@TEMP".to_string());
+            // push temp i  =>  D = i
+            let mut temp_idx: usize = 5;
+            temp_idx += index;
+            instructions.push(format!("@{}", temp_idx));
             instructions.push("D=M".to_string());
+
+            // push push instrucions
+            instructions.push("@SP".to_string());
             instructions.push("A=M".to_string());
+            instructions.push("M=D".to_string());
+            instructions.push("@SP".to_string());
+            instructions.push("M=M+1".to_string());
+            return instructions;
         }
         "R13" => {
             instructions.push("@R13".to_string());
@@ -80,6 +89,20 @@ pub fn write_push(command: CommandType, segment: &str, index: usize) -> Vec<Stri
             instructions.push("D=M".to_string());
             instructions.push("A=M".to_string());
         }
+        "constant" => {
+            // push constant i  =>  D = i
+            instructions.push(format!("@{}", index));
+            instructions.push("D=A".to_string());
+
+            // push push instrucions
+            instructions.push("@SP".to_string());
+            instructions.push("A=M".to_string());
+            instructions.push("M=D".to_string());
+            instructions.push("@SP".to_string());
+            instructions.push("M=M+1".to_string());
+            return instructions;
+        }
+
         _ => println!("Invalid Segment: {} Segment did not match", segment),
     };
 

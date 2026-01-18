@@ -3,7 +3,10 @@ use std::{
     io::Write,
 };
 
-use crate::parser::{CommandType, Parser};
+use crate::{
+    code_writer::write_arithmetic,
+    parser::{CommandType, Parser},
+};
 
 mod code_writer;
 mod parser;
@@ -13,7 +16,6 @@ fn main() {
     // pasrse each line
     // get the command type
     // call fucntions with comamnds
-
     // read from file
     let mut parser = Parser::new();
     let mut file = File::create("output.txt").expect("Failed to create file");
@@ -29,10 +31,16 @@ fn main() {
                     parser.arg2().unwrap(),
                 )
             }
-            _ => println!("no matching paster command type"),
+            parser::CommandType::ARITHMETIC => {
+                instruction = code_writer::write_arithmetic(parser.arg1());
+            }
+            _ => println!("no matching parser command type"),
         }
 
-        writeln!(file, "{:?}", instruction).unwrap();
+        for line in instruction {
+            writeln!(file, "{}", line).unwrap();
+        }
+
         parser.advance();
     }
 }
