@@ -144,8 +144,26 @@ pub fn write_pop(command: CommandType, segment: &str, index: usize) -> Vec<Strin
             instructions.push("D=M".to_string());
         }
         "temp" => {
-            instructions.push("@TEMP".to_string());
+            let mut temp_idx:usize = 5;
+            temp_idx += index;
+            instructions.push(format!("@{}", temp_idx ));
+            instructions.push("D=A".to_string());
+
+            // Save address in R13
+            instructions.push("@R13".to_string());
+            instructions.push("M=D".to_string());
+
+                // pop stack
+            instructions.push("@SP".to_string());
+            instructions.push("A=M-1".to_string());
             instructions.push("D=M".to_string());
+            instructions.push("@R13".to_string());
+            instructions.push("A=M".to_string());
+            instructions.push("M=D".to_string());
+            instructions.push("@SP".to_string());
+            instructions.push("M=M-1".to_string());
+
+            return instructions;
         }
         "R13" => {
             instructions.push("@R13".to_string());
