@@ -219,6 +219,23 @@ impl CodeWriter {
                 instructions.push("M=M+1".to_string());
                 return instructions;
             }
+            "pointer" => {
+                if index == 0 {
+                    instructions.push("@THIS".to_string());
+                } else if index == 1 {
+                    instructions.push("@THAT".to_string());
+                } else {
+                    panic!("pointer index must be 0 or 1");
+                }
+                instructions.push("D=M".to_string());
+                instructions.push("@SP".to_string());
+                instructions.push("A=M".to_string());
+                instructions.push("M=D".to_string());
+                instructions.push("@SP".to_string());
+                instructions.push("M=M+1".to_string());
+                return instructions;
+            }
+
 
             _ => panic!("Invalid Segment: {} Segment did not match", segment),
         };
