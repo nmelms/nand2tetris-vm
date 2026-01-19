@@ -309,6 +309,20 @@ impl CodeWriter {
                 instructions.push("@R15".to_string());
                 instructions.push("D=M".to_string());
             }
+            "pointer" => {
+                instructions.push("@SP".to_string());
+                instructions.push("AM=M-1".to_string());
+                instructions.push("D=M".to_string());
+                if index == 0 {
+                    instructions.push("@THIS".to_string());
+                } else if index == 1 {
+                    instructions.push("@THAT".to_string());
+                } else {
+                    panic!("pointer index must be 0 or 1");
+                }
+                instructions.push("M=D".to_string());
+                return instructions;
+            }
             _ => println!("Invalid Segment. Segment did not match"),
         };
 
