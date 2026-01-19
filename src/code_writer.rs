@@ -39,6 +39,29 @@ pub fn write_arithmetic(command: &str) -> Vec<String> {
             instructions.push("@SP".to_string());
             instructions.push("M=M-1".to_string()); 
         }
+        "eq" => {
+            instructions.push("@SP".to_string());
+            instructions.push("AM=M-1".to_string());
+            instructions.push("D=M".to_string());
+            instructions.push("A=A-1".to_string());
+            instructions.push("D=M-D".to_string());
+            instructions.push("@TRUE".to_string());
+            instructions.push("D;JEQ".to_string());
+
+            instructions.push("@SP".to_string());
+            instructions.push("A=M-1".to_string());
+            instructions.push("M=0".to_string());
+            instructions.push("@END".to_string());
+            instructions.push("0;JMP".to_string());
+
+            instructions.push("(TRUE)".to_string());
+            instructions.push("@SP".to_string());
+            instructions.push("A=M-1".to_string());
+            instructions.push("M=-1".to_string());
+
+            instructions.push("(END)".to_string());
+        }
+
 
         _ => println!("invalid command. No match in write arithmetic"),
     }
