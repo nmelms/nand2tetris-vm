@@ -107,6 +107,38 @@ impl CodeWriter {
                 // end
                 instructions.push(format!("({})", end_label));
             }
+            "lt" => {
+                let id = self.label_id;
+                self.label_id += 1;
+
+                let true_label = format!("LT_TRUE_{}", id);
+                let end_label  = format!("LT_END_{}", id);
+
+                instructions.push("@SP".to_string());
+                instructions.push("AM=M-1".to_string());
+                instructions.push("D=M".to_string());
+                instructions.push("A=A-1".to_string());
+                instructions.push("D=M-D".to_string());
+                instructions.push(format!("@{}", true_label));
+                instructions.push("D;JLT".to_string());
+
+                // false
+                instructions.push("@SP".to_string());
+                instructions.push("A=M-1".to_string());
+                instructions.push("M=0".to_string());
+                instructions.push(format!("@{}", end_label));
+                instructions.push("0;JMP".to_string());
+
+                // true
+                instructions.push(format!("({})", true_label));
+                instructions.push("@SP".to_string());
+                instructions.push("A=M-1".to_string());
+                instructions.push("M=-1".to_string());
+
+                // end
+                instructions.push(format!("({})", end_label));
+            }
+
 
 
 
@@ -259,4 +291,3 @@ impl CodeWriter {
 
         
 }
-
