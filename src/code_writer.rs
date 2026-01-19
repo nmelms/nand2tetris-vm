@@ -1,12 +1,16 @@
-
 use crate::parser::CommandType;
 
-pub struct CodeWriter{
-    label_id: usize,
+pub struct CodeWriter {
+    pub label_id: usize,
 }
 
 impl CodeWriter {
-    pub fn write_push_pop(&mut self, command: CommandType, segment: &str, index: usize) -> Vec<String> {
+    pub fn write_push_pop(
+        &mut self,
+        command: CommandType,
+        segment: &str,
+        index: usize,
+    ) -> Vec<String> {
         match command {
             CommandType::PUSH => {
                 println!("pushing");
@@ -36,19 +40,19 @@ impl CodeWriter {
             }
             "sub" => {
                 instructions.push("@SP".to_string());
-                instructions.push("A=M-1".to_string()); 
-                instructions.push("D=M".to_string());   
-                instructions.push("A=A-1".to_string()); 
-                instructions.push("M=M-D".to_string()); 
+                instructions.push("A=M-1".to_string());
+                instructions.push("D=M".to_string());
+                instructions.push("A=A-1".to_string());
+                instructions.push("M=M-D".to_string());
                 instructions.push("@SP".to_string());
-                instructions.push("M=M-1".to_string()); 
+                instructions.push("M=M-1".to_string());
             }
             "eq" => {
                 let id = self.label_id;
                 self.label_id += 1;
 
                 let true_label = format!("EQ_TRUE_{}", id);
-                let end_label  = format!("EQ_END_{}", id);
+                let end_label = format!("EQ_END_{}", id);
 
                 instructions.push("@SP".to_string());
                 instructions.push("AM=M-1".to_string());
@@ -73,15 +77,15 @@ impl CodeWriter {
             }
             "neg" => {
                 instructions.push("@SP".to_string());
-                instructions.push("A=M-1".to_string()); 
-                instructions.push("M=-M".to_string());   
+                instructions.push("A=M-1".to_string());
+                instructions.push("M=-M".to_string());
             }
             "gt" => {
                 let id = self.label_id;
                 self.label_id += 1;
 
                 let true_label = format!("GT_TRUE_{}", id);
-                let end_label  = format!("GT_END_{}", id);
+                let end_label = format!("GT_END_{}", id);
 
                 instructions.push("@SP".to_string());
                 instructions.push("AM=M-1".to_string());
@@ -112,7 +116,7 @@ impl CodeWriter {
                 self.label_id += 1;
 
                 let true_label = format!("LT_TRUE_{}", id);
-                let end_label  = format!("LT_END_{}", id);
+                let end_label = format!("LT_END_{}", id);
 
                 instructions.push("@SP".to_string());
                 instructions.push("AM=M-1".to_string());
@@ -138,9 +142,27 @@ impl CodeWriter {
                 // end
                 instructions.push(format!("({})", end_label));
             }
-
-
-
+            "or" => {
+                instructions.push("@SP".to_string());
+                instructions.push("AM=M-1".to_string());
+                instructions.push("D=M".to_string());
+                instructions.push("A=A-1".to_string());
+                instructions.push("D=D|M".to_string());
+                instructions.push("M=D".to_string());
+            }
+            "and" => {
+                instructions.push("@SP".to_string());
+                instructions.push("AM=M-1".to_string());
+                instructions.push("D=M".to_string());
+                instructions.push("A=A-1".to_string());
+                instructions.push("D=D&M".to_string());
+                instructions.push("M=D".to_string());
+            }
+            "not" => {
+                instructions.push("@SP".to_string());
+                instructions.push("A=M-1".to_string());
+                instructions.push("M=!M".to_string());
+            }
 
             _ => println!("invalid command. No match in write arithmetic"),
         }
@@ -273,21 +295,19 @@ impl CodeWriter {
             _ => println!("Invalid Segment. Segment did not match"),
         };
 
-            // Save address in R13
-            instructions.push(format!("@{}", index));
-            instructions.push("D=D+A".to_string());
-            instructions.push("@R13".to_string());
-            instructions.push("M=D".to_string());
+        // Save address in R13
+        instructions.push(format!("@{}", index));
+        instructions.push("D=D+A".to_string());
+        instructions.push("@R13".to_string());
+        instructions.push("M=D".to_string());
 
-            instructions.push("@SP".to_string());
-            instructions.push("AM=M-1".to_string()); 
-            instructions.push("D=M".to_string()); 
-            instructions.push("@R13".to_string());
-            instructions.push("A=M".to_string());
-            instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("AM=M-1".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@R13".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
 
-            instructions
-        }
-
-        
+        instructions
+    }
 }

@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    code_writer::write_arithmetic,
+    code_writer::CodeWriter,
     parser::{CommandType, Parser},
 };
 
@@ -19,6 +19,7 @@ fn main() {
     // read from file
     let mut parser = Parser::new();
     let mut file = File::create("output.asm").expect("Failed to create file");
+    let mut code_writer = CodeWriter { label_id: 0 };
 
     while parser.hasMoreLines() {
         parser.advance();
@@ -26,14 +27,14 @@ fn main() {
 
         match parser.command_type() {
             parser::CommandType::PUSH | parser::CommandType::POP => {
-                instruction = code_writer::write_push_pop(
+                instruction = code_writer.write_push_pop(
                     parser.command_type(),
                     parser.arg1(),
                     parser.arg2().unwrap(),
                 )
             }
             parser::CommandType::ARITHMETIC => {
-                instruction = code_writer::write_arithmetic(parser.arg1());
+                instruction = code_writer.write_arithmetic(parser.arg1());
             }
             _ => println!("no matching parser command type"),
         }
