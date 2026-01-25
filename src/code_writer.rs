@@ -390,4 +390,19 @@ impl CodeWriter {
 
         return instructions;
     }
+
+    pub fn write_funciton(&mut self, fn_name: &str, n_vars: usize) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+
+        //push fn name
+        instructions.push(format!("({})", fn_name));
+
+        //loop nvars and push 0 to stack
+        for _i in 0..n_vars{
+            let mut str = self.write_push("constant", 0);
+            instructions.append(&mut str);
+        }
+
+        instructions
+    }
 }
