@@ -3,7 +3,7 @@ use std::fs;
 pub struct Parser {
     lines: Vec<String>,
     i: usize,
-    current_cmd: String,
+    pub current_cmd: String,
     // split_current_cmd: Vec<&str>
 }
 #[derive(PartialEq, Debug)]
@@ -88,6 +88,7 @@ impl Parser {
 
     pub fn arg2(&self) -> Option<usize> {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
+        println!("inside arg 2: {:?}", split_command);
 
         if self.command_type() == CommandType::PUSH
             || self.command_type() == CommandType::POP

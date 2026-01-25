@@ -19,7 +19,10 @@ fn main() {
     // read from file
     let mut parser = Parser::new();
     let mut file = File::create("output.asm").expect("Failed to create file");
-    let mut code_writer = CodeWriter { label_id: 0 };
+    let mut code_writer = CodeWriter {
+        label_id: 0,
+        file_name: "Prog".to_string(),
+    };
 
     while parser.hasMoreLines() {
         parser.advance();
@@ -30,12 +33,18 @@ fn main() {
                 instruction = code_writer.write_push_pop(
                     parser.command_type(),
                     parser.arg1(),
-                    parser.arg2().unwrap(),
+                    parser.arg2().expect(&format!(
+                        "arg2 missing for this command: {}.",
+                        parser.current_cmd
+                    )),
                 )
             }
             parser::CommandType::ARITHMETIC => {
                 instruction = code_writer.write_arithmetic(parser.arg1());
             }
+            parser::CommandType::LABEL => instruction = code_writer.write_label(parser.arg1()),
+            parser::CommandType::GOTO => instruction = code_writer.write_goto(parser.arg1()),
+            parser::CommandType::IF => instruction = code_writer.write_if(parser.arg1()),
             _ => println!("no matching parser command type"),
         }
 

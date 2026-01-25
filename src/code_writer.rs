@@ -2,6 +2,7 @@ use crate::parser::CommandType;
 
 pub struct CodeWriter {
     pub label_id: usize,
+    pub file_name: String,
 }
 
 impl CodeWriter {
@@ -235,7 +236,18 @@ impl CodeWriter {
                 instructions.push("M=M+1".to_string());
                 return instructions;
             }
+            "static" => {
+                instructions.push(format!("@{}.{}", self.file_name, index));
+                instructions.push("D=M".to_string());
 
+                // push push instrucions
+                instructions.push("@SP".to_string());
+                instructions.push("A=M".to_string());
+                instructions.push("M=D".to_string());
+                instructions.push("@SP".to_string());
+                instructions.push("M=M+1".to_string());
+                return instructions;
+            }
 
             _ => panic!("Invalid Segment: {} Segment did not match", segment),
         };
@@ -323,6 +335,15 @@ impl CodeWriter {
                 instructions.push("M=D".to_string());
                 return instructions;
             }
+            "static" => {
+                instructions.push("@SP".to_string());
+                instructions.push("AM=M-1".to_string());
+                instructions.push("D=M".to_string());
+                instructions.push(format!("@{}.{}", self.file_name, index));
+                instructions.push("M=D".to_string());
+                return instructions;
+            }
+
             _ => println!("Invalid Segment. Segment did not match"),
         };
 
@@ -340,5 +361,33 @@ impl CodeWriter {
         instructions.push("M=D".to_string());
 
         instructions
+    }
+
+    pub fn write_label(&self, label: &str) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+
+        instructions.push(format!("({})", label));
+        return instructions;
+    }
+
+    pub fn write_goto(&self, label: &str) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+
+        instructions.push(format!("@{}", label));
+        instructions.push("0;JMP".to_string());
+        return instructions;
+    }
+
+    pub fn write_if(&self, label: &str) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+
+        // instructions.push(format!("@{}", label));
+        instructions.push("@SP".to_string());
+        instructions.push("AM=M-1".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push(format!("@{}", label));
+        instructions.push("D;JNE".to_string());
+
+        return instructions;
     }
 }
