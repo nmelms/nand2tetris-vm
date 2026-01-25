@@ -25,7 +25,7 @@ fn main() {
         if parser.current_cmd.starts_with("//") || parser.current_cmd.trim().is_empty() {
             println!("inside check {}", parser.current_cmd);
             continue;
-        }   
+        }
         let mut instruction: Vec<String> = vec![];
 
         match parser.command_type() {

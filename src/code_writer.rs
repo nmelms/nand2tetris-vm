@@ -398,10 +398,83 @@ impl CodeWriter {
         instructions.push(format!("({})", fn_name));
 
         //loop nvars and push 0 to stack
-        for _i in 0..n_vars{
+        for _i in 0..n_vars {
             let mut str = self.write_push("constant", 0);
             instructions.append(&mut str);
         }
+
+        instructions
+    }
+
+    pub fn write_call(&mut self, fn_name: &str, n_vars: usize) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+        let id = self.label_id;
+        self.label_id += 1;
+        // might need to udate this to use the calle
+
+        let label = format!("{}$ret.{}", fn_name, id);
+        //genereate label and push to stack
+        instructions.push(format!("@{}", label));
+        instructions.push("D=A".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=M+1".to_string());
+
+        // instructions.push(format!("({}$ret.{})", fn_name, self.label_id ));
+        //push LCL
+        instructions.push("@LCL".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=M+1".to_string());
+        //push arg
+        instructions.push("@ARG".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=M+1".to_string());
+        //push THIS
+        instructions.push("@THIS".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=M+1".to_string());
+        //push THAT
+        instructions.push("@THAT".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=M+1".to_string());
+        //REposition ARG
+        instructions.push("@SP".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@5".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push(format!("@{}", n_vars));
+        instructions.push("D=D-A".to_string());
+        instructions.push("@ARG".to_string());
+        instructions.push("M=D".to_string());
+        //REposition LCL
+        instructions.push("@SP".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@LCL".to_string());
+        instructions.push("M=D".to_string());
+
+        //goto fn
+        instructions.push(format!("@{}", fn_name));
+        instructions.push("0;JMP".to_string());
+
+        instructions.push(format!("({})", label));
 
         instructions
     }
