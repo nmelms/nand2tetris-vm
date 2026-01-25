@@ -12,11 +12,6 @@ mod code_writer;
 mod parser;
 
 fn main() {
-    // read from the file
-    // pasrse each line
-    // get the command type
-    // call fucntions with comamnds
-    // read from file
     let mut parser = Parser::new();
     let mut file = File::create("output.asm").expect("Failed to create file");
     let mut code_writer = CodeWriter {
@@ -26,6 +21,11 @@ fn main() {
 
     while parser.hasMoreLines() {
         parser.advance();
+        println!("current Command: {}", parser.current_cmd);
+        if parser.current_cmd.starts_with("//") || parser.current_cmd.trim().is_empty() {
+            println!("inside check {}", parser.current_cmd);
+            continue;
+        }   
         let mut instruction: Vec<String> = vec![];
 
         match parser.command_type() {

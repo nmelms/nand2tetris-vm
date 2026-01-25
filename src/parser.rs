@@ -25,7 +25,7 @@ impl Parser {
         let file_contents = fs::read_to_string("Prog.vm").expect("failed to read VM file");
         let lines: Vec<String> = file_contents.lines().map(String::from).collect();
         let i = 0;
-        let current_cmd = lines[i].clone();
+        let current_cmd = lines[i].trim().to_string().clone();
         // self.split_current_cmd = self.lines[self.i].split(" ").collect();
 
         Self {
@@ -44,7 +44,7 @@ impl Parser {
     }
 
     pub fn advance(&mut self) {
-        self.current_cmd = self.lines[self.i].clone();
+        self.current_cmd = self.lines[self.i].trim().to_string().clone();
         self.i += 1;
     }
 
