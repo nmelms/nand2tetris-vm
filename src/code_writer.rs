@@ -13,20 +13,13 @@ impl CodeWriter {
         index: usize,
     ) -> Vec<String> {
         match command {
-            CommandType::PUSH => {
-                println!("pushing");
-                self.write_push(segment, index)
-            }
-            CommandType::POP => {
-                println!("popping");
-                self.write_pop(segment, index)
-            }
+            CommandType::PUSH => self.write_push(segment, index),
+            CommandType::POP => self.write_pop(segment, index),
             _ => vec!["nothing".to_string()],
         }
     }
 
     pub fn write_arithmetic(&mut self, command: &str) -> Vec<String> {
-        println!("write arth: {}", command);
         let mut instructions: Vec<String> = vec![];
         match command {
             "add" => {
@@ -475,6 +468,87 @@ impl CodeWriter {
         instructions.push("0;JMP".to_string());
 
         instructions.push(format!("({})", label));
+
+        instructions
+    }
+
+    pub fn write_return(&mut self) -> Vec<String> {
+        let mut instructions: Vec<String> = vec![];
+
+        // FRAME = LCL  (use R13 as FRAME)
+        instructions.push("@LCL".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@R13".to_string());
+        instructions.push("M=D".to_string());
+
+        // RET = *(FRAME - 5)  (use R14 as RET)
+        instructions.push("@R13".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@5".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push("A=D".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@R14".to_string());
+        instructions.push("M=D".to_string());
+
+        // *ARG = pop()
+        instructions.push("@SP".to_string());
+        instructions.push("AM=M-1".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@ARG".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("M=D".to_string());
+
+        // SP = ARG + 1
+        instructions.push("@ARG".to_string());
+        instructions.push("D=M+1".to_string());
+        instructions.push("@SP".to_string());
+        instructions.push("M=D".to_string());
+
+        // THAT = *(FRAME - 1)
+        instructions.push("@R13".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@1".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push("A=D".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@THAT".to_string());
+        instructions.push("M=D".to_string());
+
+        // THIS = *(FRAME - 2)
+        instructions.push("@R13".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@2".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push("A=D".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@THIS".to_string());
+        instructions.push("M=D".to_string());
+
+        // ARG = *(FRAME - 3)
+        instructions.push("@R13".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@3".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push("A=D".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@ARG".to_string());
+        instructions.push("M=D".to_string());
+
+        // LCL = *(FRAME - 4)
+        instructions.push("@R13".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@4".to_string());
+        instructions.push("D=D-A".to_string());
+        instructions.push("A=D".to_string());
+        instructions.push("D=M".to_string());
+        instructions.push("@LCL".to_string());
+        instructions.push("M=D".to_string());
+
+        // goto RET
+        instructions.push("@R14".to_string());
+        instructions.push("A=M".to_string());
+        instructions.push("0;JMP".to_string());
 
         instructions
     }

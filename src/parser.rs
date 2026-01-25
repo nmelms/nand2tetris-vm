@@ -50,6 +50,7 @@ impl Parser {
 
     pub fn command_type(&self) -> CommandType {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
+        // print!("{:?}", split_command);
 
         match split_command[0] {
             "add" => CommandType::ARITHMETIC,
@@ -88,7 +89,6 @@ impl Parser {
 
     pub fn arg2(&self) -> Option<usize> {
         let split_command: Vec<&str> = self.current_cmd.split(" ").collect();
-        println!("inside arg 2: {:?}", split_command);
 
         if self.command_type() == CommandType::PUSH
             || self.command_type() == CommandType::POP
